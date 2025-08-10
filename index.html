@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jesus' Commandments App</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Custom Tailwind configuration to maintain the app's color scheme
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primaryBlue: '#1e40af',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom styles for the app's overall look and feel */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .page-content {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div id="root"></div>
+    <!-- React, ReactDOM, and Babel -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- COMMANDS DATA ---
+        // This array holds all the data for the main page, including verses and theological insights.
+        const commands = [
+            {
+                title: "Love God",
+                verse: "Mark 12:30 - Love the Lord your God with all your heart and with all your soul and with all your mind and with all your strength.",
+                reason: "This is the first and greatest commandment, foundational to all others. It reorients our entire being towards our Creator, recognizing His supreme worth and authority as sovereign over all creation. Our love for Him is a response to His prior, electing love for us.",
+                steps: "Spend time in prayer and worship daily, acknowledging His majesty and grace. Meditate deeply on His Word, seeking to understand His character and will as revealed in Scripture. Prioritize Him above all else in your decisions and affections, trusting in His providential care."
+            },
+            {
+                title: "Love Your Neighbor",
+                verse: "Mark 12:31 - The second is this: 'Love your neighbor as yourself.' There is no commandment greater than these.",
+                reason: "Flowing from our love for God, this command reflects His image in us. As God has shown covenantal love and mercy to His people, so we are called to extend genuine, selfless love to those around us, recognizing their inherent dignity as image-bearers, even if fallen.",
+                steps: "Actively seek the welfare of others, both within and outside the church. Practice hospitality, generosity, and compassion. Speak truth in love, and be quick to forgive, remembering Christ's forgiveness of you. Engage in acts of mercy and justice in your community."
+            },
+            {
+                title: "Make Disciples",
+                verse: "Matthew 28:19-20 - Therefore go and make disciples of all nations, baptizing them in the name of the Father and of the Son and of the Holy Spirit, and teaching them to obey everything I have commanded you.",
+                reason: "This Great Commission is the church's primary task until Christ returns. It is a sovereign call to extend God's kingdom through the proclamation of the gospel, the administration of the sacraments, and the teaching of all Christ's commands, bringing glory to God through the salvation of His elect from every tribe and tongue.",
+                steps: "Support global and local missions through prayer and giving. Share the gospel clearly and winsomely when opportunities arise. Mentor new believers, teaching them sound doctrine and encouraging obedience to Christ. Live a life that commends the gospel to those around you."
+            },
+            {
+                title: "Repent and Believe",
+                verse: "Mark 1:15 - The time has come, the kingdom of God has come near. Repent and believe the good news!",
+                reason: "This is the foundational response to God's gracious call to salvation. Repentance is a Spirit-wrought turning from sin to God, acknowledging our depravity and His holiness. Belief is a trusting reliance on Christ alone for salvation, recognizing His finished work on the cross as sufficient for our justification and sanctification.",
+                steps: "Regularly confess your sins to God, seeking His forgiveness through Christ. Continually renew your faith in the gospel, meditating on Christ's atoning work. Live a life consistent with your repentance, striving for holiness by the power of the Holy Spirit."
+            },
+            {
+                title: "Seek First the Kingdom",
+                verse: "Matthew 6:33 - But seek first his kingdom and his righteousness, and all these things will be given to you as well.",
+                reason: "This command calls us to prioritize God's sovereign rule and His perfect justice above all earthly concerns. It is an act of faith in His providence, trusting that as we align our lives with His purposes, He will graciously provide for our needs. Our pursuit of righteousness is not for merit, but as a fruit of our justification in Christ.",
+                steps: "Make decisions based on biblical principles rather than worldly gain. Devote time to studying God's Word and prayer to understand His will. Act justly, love mercy, and walk humbly with your God in all areas of life. Trust God with your future, knowing He works all things for His glory and your good."
+            },
+            {
+                title: "Do Not Worry",
+                verse: "Matthew 6:25 - Therefore I tell you, do not worry about your life, what you will eat or drink; or about your body, what you will wear. Is not life more than food, and the body more than clothes?",
+                reason: "This command is a direct challenge to our lack of faith in God's meticulous providence. Worry betrays a distrust in His sovereign care and goodness. As Reformed believers, we affirm that God orchestrates all things for His glory and the good of His people, freeing us from anxious striving.",
+                steps: "When anxious thoughts arise, consciously turn them into prayers, casting your cares on God. Remind yourself of God's past faithfulness and His promises in Scripture. Practice contentment in all circumstances, knowing that God is in control. Focus on present duties, trusting God with the future."
+            },
+            {
+                title: "Pray in Secret",
+                verse: "Matthew 6:6 - But when you pray, go into your room, close the door and pray to your Father, who is unseen. Then your Father, who sees what is done in secret, will reward you.",
+                reason: "This command emphasizes the sincerity and intimacy of prayer. True prayer is not for human applause but a humble, dependent communion with our heavenly Father, who knows our hearts. It reflects our reliance on His grace and sovereignty, rather than our own performance.",
+                steps: "Establish a regular, private time and place for prayer. Focus on genuine communication with God, expressing adoration, confession, thanksgiving, and supplication. Prioritize listening to God through His Word as part of your prayer life. Let your public prayers flow from your private devotion."
+            },
+            {
+                title: "Forgive Others",
+                verse: "Matthew 6:14-15 - For if you forgive other people when they sin against you, your heavenly Father will also forgive you. But if you do not forgive others their sins, your Father will not forgive your sins.",
+                reason: "Our ability to forgive others is a direct outflow and evidence of God's gracious forgiveness extended to us through Christ. As those who have received immense mercy, we are called to reflect that same mercy to those who wrong us, not as a means to earn forgiveness, but as a fruit of having been forgiven.",
+                steps: "Consciously choose to release bitterness and resentment. Pray for those who have wronged you. Seek reconciliation where possible and appropriate, but always extend forgiveness in your heart. Remember the depth of Christ's forgiveness for your own sins, which empowers you to forgive others."
+            },
+            {
+                title: "Be Salt and Light",
+                verse: "Matthew 5:13-16 - You are the salt of the earth... You are the light of the world... Let your light shine before others, that they may see your good deeds and glorify your Father in heaven.",
+                reason: "As believers, we are called to be a preserving and illuminating influence in a fallen world. Our good works, which God has prepared beforehand for us to do (Eph. 2:10), are not for self-glory but to point others to the glory of God, demonstrating the transformative power of His grace in our lives.",
+                steps: "Live with integrity and moral purity in all areas of life. Engage actively in your community, seeking opportunities to serve and speak truth. Let your actions and words consistently reflect Christ's character. Be prepared to give a reason for the hope that is within you, always with gentleness and respect."
+            },
+            {
+                title: "Take Up Your Cross",
+                verse: "Matthew 16:24 - Then Jesus said to his disciples, 'Whoever wants to be my disciple must deny themselves and take up their cross and follow me.'",
+                reason: "Discipleship to Christ involves a radical reorientation of our lives, crucifying the old self and living for Him. This self-denial is not self-punishment but a joyful submission to God's will, recognizing that our lives are no longer our own but belong to Christ, who bought us with a price. It is a daily commitment to sanctification, following Christ even in suffering.",
+                steps: "Identify areas where your desires conflict with God's will and consciously choose obedience. Embrace difficulties and trials as opportunities for spiritual growth and conformity to Christ. Prioritize Christ's glory and the advancement of His kingdom over personal comfort or worldly success. Regularly examine your motives and align them with God's Word."
+            },
+            {
+                title: "Abide in Me",
+                verse: "John 15:4 - Abide in me, and I in you. As the branch cannot bear fruit by itself, unless it abides in the vine, neither can you, unless you abide in me.",
+                reason: "This command underscores our complete dependence on Christ for spiritual life and fruitfulness. Abiding in Christ signifies a continuous, intimate union with Him through faith, prayer, and obedience to His Word. It is through this union, wrought by the Holy Spirit, that we receive the grace necessary for sanctification and good works, which are the evidence of true faith.",
+                steps: "Cultivate a consistent devotional life, spending time in God's Word and prayer. Seek to obey Christ's commands, knowing that obedience is a fruit of abiding. Rely on the Holy Spirit to empower you for godly living. Regularly participate in the sacraments and fellowship of the church, which are means of grace."
+            },
+            {
+                title: "Wash One Another's Feet",
+                verse: "John 13:14 - Now that I, your Lord and Teacher, have washed your feet, you also should wash one another's feet.",
+                reason: "This command exemplifies humble, selfless service within the community of believers. It calls us to imitate Christ's condescending love and servant leadership, putting the needs of others before our own. In a Reformed context, this service is a tangible expression of our gratitude for God's grace and our love for our fellow saints, building up the body of Christ.",
+                steps: "Actively look for opportunities to serve others, especially within the church, even in seemingly small or unnoticed ways. Be willing to humble yourself and take on tasks that might be considered beneath you. Practice empathy and compassion, seeking to understand and meet the needs of your brothers and sisters in Christ. Serve without expectation of recognition or reward."
+            }
+        ];
+
+        // --- QUIZ QUESTIONS DATA ---
+        // This array contains a pool of questions for the quiz page.
+        const quizQuestions = [
+            // Level 1: Foundational knowledge (references to Sermon on the Mount)
+            {
+                questionText: "In the Sermon on the Mount, Jesus commands his disciples to 'turn the other cheek' and 'go the extra mile.' What is the primary purpose of this command?",
+                correctAnswer: "To demonstrate a radical, non-retaliatory love that goes beyond the requirements of human law.",
+                incorrectAnswers: [
+                    "To prove one's righteousness to others through public acts of humility.",
+                    "To earn favor with God for salvation.",
+                    "To avoid conflict at all costs and maintain peace in the community."
+                ],
+                type: "theological",
+                reason: "This command is a part of Jesus' teaching in the Sermon on the Mount (Matthew 5:38-42), which sets a new standard of righteousness far beyond the Old Testament's 'eye for an eye.' It is a call to radical love and forbearance, imitating Christ's own non-retaliatory nature, not to earn favor or simply avoid conflict."
+            },
+            {
+                questionText: "In Matthew 7, Jesus warns against judging others. Which statement best summarizes the reason for this command?",
+                correctAnswer: "We must first address our own sin (the plank in our eye) before we can help others with theirs (the speck).",
+                incorrectAnswers: [
+                    "It is never right to make any discernment about another person's behavior.",
+                    "Only God can see a person's heart, so we should leave all judgment to Him.",
+                    "By judging others, we are guaranteed to be judged in the same way by God."
+                ],
+                type: "reason",
+                reason: "Jesus' instruction in Matthew 7:1-5 is not a prohibition against all discernment. Rather, it is a command to examine our own sin first. The image of the plank in our eye and the speck in our brother's eye highlights that our own hypocrisy blinds us from helping others effectively and biblically."
+            },
+            {
+                questionText: "Jesus teaches 'you cannot serve both God and money.' (Matthew 6:24). This command is most closely connected to the theological reason for which of the following commands?",
+                correctAnswer: "Seek First the Kingdom",
+                incorrectAnswers: [
+                    "Make Disciples",
+                    "Do Not Worry",
+                    "Pray in Secret"
+                ],
+                type: "synthesis",
+                reason: "Jesus teaches that money is a rival master to God. The command to 'Seek First the Kingdom' (Matthew 6:33) directly follows this teaching, establishing the priority of God's sovereign rule and righteousness over all worldly desires and possessions. This is a matter of ultimate allegiance and trust, which directly combats the love of money."
+            },
+            // Level 2: Deeper understanding & specific verses
+            {
+                questionText: "In the parable of the sheep and the goats (Matthew 25), Jesus says to the righteous, 'whatever you did for one of the least of these brothers and sisters of mine, you did for me.' What command does this parable most powerfully illustrate?",
+                correctAnswer: "Love Your Neighbor",
+                incorrectAnswers: [
+                    "Make Disciples",
+                    "Take Up Your Cross",
+                    "Abide in Me"
+                ],
+                type: "application",
+                reason: "In Matthew 25:31-46, Jesus connects acts of mercy and service to 'the least of these' directly to Himself. This is a powerful application of the command to love your neighbor, demonstrating that genuine love for God is expressed tangibly through selfless service to others, especially those in need and marginalized."
+            },
+            {
+                questionText: "Jesus says, 'A new command I give you: Love one another. As I have loved you, so you must love one another.' (John 13:34). What does the word 'new' in this context primarily signify?",
+                correctAnswer: "A new standard of love modeled on Christ's self-sacrificial love for His disciples.",
+                incorrectAnswers: [
+                    "A command that had never been given before in the Old Testament.",
+                    "A command that replaced the Old Testament law to love your neighbor as yourself.",
+                    "A command that applies only to the early church and not to believers today."
+                ],
+                type: "theological",
+                reason: "While the command to love one another existed in the Old Testament (Leviticus 19:18), Jesus' command in John 13:34 sets a new, higher standard. The love we are to have for one another is now to be modeled on Christ's own self-sacrificial and costly love, which is the unique mark of true discipleship."
+            },
+            {
+                questionText: "Before ascending to heaven, Jesus commanded his disciples to 'go into all the world and proclaim the gospel to the whole creation.' (Mark 16:15). This command is most clearly a restatement or parallel to which other command?",
+                correctAnswer: "Make Disciples",
+                incorrectAnswers: [
+                    "Be Salt and Light",
+                    "Repent and Believe",
+                    "Wash One Another's Feet"
+                ],
+                type: "synthesis",
+                reason: "This command from Mark 16:15 is a direct parallel to the Great Commission in Matthew 28:19-20. Both command believers to go forth and proclaim the gospel to all nations, making disciples and teaching them to obey Christ's commands. This mission is central to the church's purpose."
+            },
+            // Level 3: Advanced synthesis and application
+            {
+                questionText: "The command to 'take up your cross' is a call to radical self-denial. How is this concept different from the command to 'Abide in Me'?",
+                correctAnswer: "Taking up the cross is an active choice of self-denial and suffering for Christ, while abiding is a passive reliance on Christ's presence for spiritual vitality.",
+                incorrectAnswers: [
+                    "Taking up the cross is about salvation, while abiding is about daily living.",
+                    "Abiding in Christ is a command for new believers, while taking up the cross is for mature believers.",
+                    "Taking up the cross is a one-time event, while abiding is a continuous process."
+                ],
+                type: "theological",
+                reason: "Taking up the cross (Matthew 16:24) is an active, daily choice to deny oneself and follow Christ. Abiding in Christ (John 15:4) is our continuous, dependent relationship with Him through faith and prayer, from which we receive the grace and power to take up the cross and bear spiritual fruit. One is the act, the other is the source of power for the act."
+            },
+            {
+                questionText: "A Christian friend is anxious about an upcoming job interview and fears failure. You remind them that God is sovereign over all things, and His plans will be fulfilled. Which two commands does your counsel most directly apply?",
+                correctAnswer: "Seek First the Kingdom and Do Not Worry",
+                incorrectAnswers: [
+                    "Repent and Believe and Forgive Others",
+                    "Abide in Me and Pray in Secret",
+                    "Be Salt and Light and Make Disciples"
+                ],
+                type: "application",
+                reason: "The counsel to 'Seek First the Kingdom' (Matthew 6:33) and 'Do Not Worry' (Matthew 6:25-34) directly addresses the friend's situation. Jesus commands us to prioritize God's kingdom and righteousness, trusting in His providential care for our needs. This frees us from the anxiety that comes from distrusting God's sovereignty."
+            },
+            {
+                questionText: "Consider the commands 'Pray in Secret' and 'Be Salt and Light.' How do these two commands work together in a believer's life?",
+                correctAnswer: "Our private devotion to God (Pray in Secret) empowers and authenticates our public witness and good works (Be Salt and Light).",
+                incorrectAnswers: [
+                    "They are contradictory commands; one is for private life and the other for public life.",
+                    "They are separate commands with no connection to one another.",
+                    "Pray in Secret is a command for pastors, while Be Salt and Light is for all believers."
+                ],
+                type: "synthesis",
+                reason: "Our public witness (being salt and light) must be rooted in and flow from our private, intimate relationship with God (praying in secret). Without a private, dependent communion with the Father, our public good works could be for our own glory, not God's, making them hollow and unbiblical."
+            },
+            // Level 4: Complex, nuanced theological questions
+            {
+                questionText: "The command to forgive others is directly connected to God's forgiveness of us. This theological principle is best described by the phrase:",
+                correctAnswer: "Our forgiveness of others is the fruit of God’s forgiveness of us, not the means by which we earn it.",
+                incorrectAnswers: [
+                    "We must first forgive others so that God will then be willing to forgive us.",
+                    "Forgiving others and God's forgiveness are unrelated concepts.",
+                    "God's forgiveness is a direct result of our own ability to forgive without any divine intervention."
+                ],
+                type: "theological",
+                reason: "Matthew 6:14-15 teaches that our forgiveness of others is a reflection and proof of the forgiveness we have already received from God through Christ. We do not forgive others to *earn* God's forgiveness, but we forgive because we have *been* forgiven, demonstrating the transformative power of God's grace in our hearts."
+            },
+            {
+                questionText: "In the parable of the Good Samaritan, Jesus challenges the narrow definition of 'neighbor.' Which of the following statements best captures the essence of this parable's command?",
+                correctAnswer: "Our neighbor is anyone in need, regardless of their background or our social boundaries, and we are commanded to show mercy.",
+                incorrectAnswers: [
+                    "Our neighbor is primarily other believers in the church community, to whom we should show special love.",
+                    "We are commanded to help anyone we find on the road, as long as it does not cost us anything.",
+                    "The priest and the Levite were wrong to pass by, but they were not commanded to help a Samaritan."
+                ],
+                type: "application",
+                reason: "The parable in Luke 10:25-37 redefines the concept of 'neighbor' to be anyone in need, even a traditional enemy (like the Samaritan was to the Jews). Jesus' command is to love and show mercy to all people, breaking down social and ethnic barriers, just as God shows mercy to us."
+            },
+            {
+                questionText: "The command 'Love God' is said to be the greatest. This is because all other commands, such as 'Love Your Neighbor' and 'Forgive Others,' are seen as what?",
+                correctAnswer: "An outflow and expression of our primary love for God, reflecting His character to the world.",
+                incorrectAnswers: [
+                    "Equal in importance and weight to the command to love God.",
+                    "Separate commands that exist independently of our love for God.",
+                    "Commands that we must fulfill on our own to prove our love for God."
+                ],
+                type: "synthesis",
+                reason: "Jesus teaches that the command to 'Love God' is the first and greatest. All other commands are a natural and necessary expression of this primary love. Loving our neighbor, forgiving others, and making disciples are not separate duties but the tangible ways we demonstrate our love and allegiance to God."
+            }
+        ];
+
+        // --- COMPONENT: CommandItem ---
+        // A single collapsible card displaying a command, with persistent state.
+        function CommandItem({ title, verse, reason, steps }) {
+            const [isOpen, setIsOpen] = useState(false);
+            const [isCompleted, setIsCompleted] = useState(() => {
+                const savedStatus = localStorage.getItem(`command-status-${title}`);
+                return savedStatus === 'true';
+            });
+
+            // Effect to save the completion status to localStorage whenever it changes.
+            useEffect(() => {
+                localStorage.setItem(`command-status-${title}`, isCompleted);
+            }, [isCompleted, title]);
+
+            const handleCompleteClick = (e) => {
+                e.stopPropagation();
+                setIsCompleted(!isCompleted);
+            };
+
+            return (
+                <div className="bg-white p-4 mb-4 rounded-lg shadow-md cursor-pointer transition-all duration-300 hover:shadow-xl" onClick={() => setIsOpen(!isOpen)}>
+                    <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-semibold text-primaryBlue">{title}</h3>
+                        <button
+                            className={`px-4 py-2 rounded-full font-bold text-sm transition-all duration-300 ${isCompleted ? 'bg-green-500 hover:bg-green-600' : 'bg-primaryBlue hover:bg-blue-700'} text-white`}
+                            onClick={handleCompleteClick}
+                            aria-label={isCompleted ? 'Mark as not understood' : 'Mark as understood'}
+                        >
+                            {isCompleted ? 'Understood' : 'Learn This'}
+                        </button>
+                    </div>
+                    {isOpen && (
+                        <div className="mt-4 page-content border-t pt-4 border-gray-200 text-gray-700">
+                            <p className="mb-2"><strong className="text-primaryBlue">Verse:</strong> {verse}</p>
+                            <p className="mb-2"><strong className="text-primaryBlue">Why it matters:</strong> {reason}</p>
+                            <p><strong className="text-primaryBlue">How to apply:</strong> {steps}</p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // --- COMPONENT: HomePage ---
+        // The main page of the application, displaying the list of commands.
+        function HomePage() {
+            const [verse, setVerse] = useState(null);
+
+            const fetchVerse = () => {
+                const randomIndex = Math.floor(Math.random() * commands.length);
+                setVerse(commands[randomIndex]);
+            };
+
+            useEffect(() => {
+                fetchVerse();
+            }, []);
+
+            return (
+                <main className="max-w-4xl mx-auto p-4 page-content">
+                    <section className="bg-white p-6 rounded-lg shadow-md mb-8 text-center">
+                        <h2 className="text-2xl font-semibold text-primaryBlue mb-4">Welcome</h2>
+                        <p className="text-lg text-gray-700">Welcome to the Reformed Jesus' Command App. This is a tool to help us know and apply the life-giving commands of Jesus. Through the grace of the Holy Spirit, may we find joyful obedience not as a burden, but as the path to true freedom, reflecting the simple trust of a child in their Father.</p>
+                        <p className="text-lg text-gray-700 mt-2">May the Lord bless and strengthen us all in our walk with Him. From Jason, please visit my website:</p>
+                        <button
+                            className="mt-4 px-6 py-2 bg-primaryBlue text-white rounded-full font-bold hover:bg-blue-700 transition-colors"
+                            onClick={() => window.open('https://churchconcern.great-site.net/', '_blank')}
+                            aria-label="Click Here To My Blog Site"
+                        >
+                            Click Here To My Blog Site
+                        </button>
+                    </section>
+                    <section className="bg-white p-6 rounded-lg shadow-md mb-8 text-center">
+                        <h2 className="text-2xl font-semibold text-primaryBlue mb-4">Random Command</h2>
+                        {verse ? (
+                            <>
+                                <p className="text-lg text-gray-700">{verse.verse}</p>
+                                <button
+                                    className="mt-4 px-6 py-2 bg-primaryBlue text-white rounded-full font-bold hover:bg-blue-700 transition-colors"
+                                    onClick={fetchVerse}
+                                    aria-label="Get another command"
+                                >
+                                    Get Another Command
+                                </button>
+                            </>
+                        ) : (
+                            <p>Loading...</p>
+                        )}
+                    </section>
+                    <section>
+                        <h2 className="text-2xl font-semibold text-primaryBlue mb-4">The Top 12 Jesus Commands</h2>
+                        {commands.map((cmd, index) => (
+                            <CommandItem
+                                key={index}
+                                title={cmd.title}
+                                verse={cmd.verse}
+                                reason={cmd.reason}
+                                steps={cmd.steps}
+                            />
+                        ))}
+                    </section>
+                </main>
+            );
+        }
+
+        // --- COMPONENT: QuizPage ---
+        // The quiz component with all the logic for a single session.
+        function QuizPage({ setPage }) {
+            const QUIZ_LENGTH = 12; // Updated to 12 questions
+            const [questions, setQuestions] = useState([]);
+            const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+            const [score, setScore] = useState(0);
+            const [showResults, setShowResults] = useState(false);
+            const [feedback, setFeedback] = useState(null);
+            const [isAnswerSelected, setIsAnswerSelected] = useState(false);
+
+            // Function to shuffle an array (Fisher-Yates algorithm)
+            const shuffleArray = (array) => {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            };
+
+            const startQuiz = () => {
+                const shuffledQuestions = shuffleArray([...quizQuestions]);
+                const selectedQuestions = shuffledQuestions.slice(0, QUIZ_LENGTH);
+
+                // Shuffle answers for each selected question
+                const questionsWithShuffledAnswers = selectedQuestions.map(q => {
+                    const answersToShuffle = [q.correctAnswer, ...q.incorrectAnswers];
+                    const shuffledAnswers = shuffleArray(answersToShuffle);
+                    return { ...q, answers: shuffledAnswers };
+                });
+
+                setQuestions(questionsWithShuffledAnswers);
+                setCurrentQuestionIndex(0);
+                setScore(0);
+                setShowResults(false);
+                setFeedback(null);
+                setIsAnswerSelected(false);
+            };
+
+            useEffect(() => {
+                startQuiz();
+            }, []);
+
+            const handleAnswerClick = (answer) => {
+                if (isAnswerSelected) return;
+                setIsAnswerSelected(true);
+
+                const currentQuestion = questions[currentQuestionIndex];
+                if (answer === currentQuestion.correctAnswer) {
+                    setScore(score + 1);
+                    setFeedback({
+                        type: 'correct',
+                        message: 'Correct!',
+                        correctAnswer: currentQuestion.correctAnswer,
+                        reason: null // No reason needed for correct answer
+                    });
+                } else {
+                    setFeedback({
+                        type: 'incorrect',
+                        message: `Incorrect.`,
+                        correctAnswer: currentQuestion.correctAnswer,
+                        reason: currentQuestion.reason
+                    });
+                }
+            };
+
+            const handleNextQuestion = () => {
+                if (currentQuestionIndex + 1 < QUIZ_LENGTH) {
+                    setCurrentQuestionIndex(currentQuestionIndex + 1);
+                    setFeedback(null);
+                    setIsAnswerSelected(false);
+                } else {
+                    setShowResults(true);
+                }
+            };
+
+            const renderQuestion = () => {
+                const question = questions[currentQuestionIndex];
+                if (!question) return null;
+
+                return (
+                    <div className="bg-white p-6 rounded-lg shadow-md mb-4 page-content">
+                        <p className="text-sm text-gray-500 mb-2">Question {currentQuestionIndex + 1} of {QUIZ_LENGTH}</p>
+                        <h3 className="text-xl font-semibold text-primaryBlue mb-4">{question.questionText}</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {question.answers.map((answer, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => handleAnswerClick(answer)}
+                                    className={`p-4 rounded-lg text-left transition-colors duration-200 
+                                                ${feedback ? (answer === question.correctAnswer ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : 'bg-gray-100 hover:bg-primaryBlue hover:text-white'}
+                                                ${isAnswerSelected ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                                    disabled={isAnswerSelected}
+                                    aria-label={`Answer: ${answer}`}
+                                >
+                                    {answer}
+                                </button>
+                            ))}
+                        </div>
+                        {feedback && (
+                            <div className={`mt-4 p-4 rounded-lg text-white font-semibold transition-all duration-300 ${feedback.type === 'correct' ? 'bg-green-700' : 'bg-red-700'}`}>
+                                <p className="mb-2">{feedback.message}</p>
+                                {feedback.type === 'incorrect' && (
+                                    <>
+                                        <p className="font-bold">Correct Answer: {feedback.correctAnswer}</p>
+                                        <p className="mt-2 text-sm font-normal"><span className="font-bold">Biblical Reason:</span> {feedback.reason}</p>
+                                    </>
+                                )}
+                                <button
+                                    className="mt-4 px-6 py-2 bg-white text-primaryBlue rounded-full font-bold hover:bg-gray-200 transition-colors"
+                                    onClick={handleNextQuestion}
+                                    aria-label="Next question"
+                                >
+                                    Next Question
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            const renderResults = () => (
+                <div className="bg-white p-6 rounded-lg shadow-md mb-4 text-center page-content">
+                    <h2 className="text-3xl font-bold text-primaryBlue mb-4">Quiz Complete!</h2>
+                    <p className="text-xl text-gray-700 mb-4">You got {score} out of {QUIZ_LENGTH} correct!</p>
+                    <button
+                        className="px-6 py-2 bg-primaryBlue text-white rounded-full font-bold hover:bg-blue-700 transition-colors"
+                        onClick={startQuiz}
+                        aria-label="Retake the quiz"
+                    >
+                        Retake Quiz
+                    </button>
+                    <button
+                        className="mt-4 block mx-auto px-6 py-2 text-primaryBlue underline font-bold hover:text-blue-700 transition-colors"
+                        onClick={() => setPage('home')}
+                        aria-label="Back to home page"
+                    >
+                        Back to Home
+                    </button>
+                </div>
+            );
+
+            return (
+                <main className="max-w-3xl mx-auto p-4 page-content">
+                    <h2 className="text-3xl font-bold text-primaryBlue text-center mb-6">Test Your Knowledge of Jesus’ Commands</h2>
+                    <p className="text-center text-gray-700 mb-8">Take this quiz to test your understanding of Jesus’ commands. Answer questions about their verses, reasons, and practical applications to deepen your learning. Salvation is a gift sealed by Christ, and obedience is our joyful response, grounded in Scripture.</p>
+                    {showResults ? renderResults() : renderQuestion()}
+                </main>
+            );
+        }
+
+        // --- COMPONENT: App ---
+        // The main application component that handles page routing.
+        function App() {
+            const [currentPage, setCurrentPage] = useState('home');
+
+            return (
+                <div className="min-h-screen bg-gray-100">
+                    <header className="bg-primaryBlue text-white py-6 text-center flex flex-col items-center">
+                        <h1 className="text-4xl font-bold">Jesus' Commandments App</h1>
+                        <p className="mt-2">Learn and live the commands of Jesus</p>
+                    </header>
+                    <nav className="flex justify-center space-x-4 py-4 bg-white shadow-sm">
+                        <button
+                            className={`font-semibold transition-colors duration-200 ${currentPage === 'home' ? 'text-primaryBlue underline' : 'text-gray-500 hover:text-primaryBlue'}`}
+                            onClick={() => setCurrentPage('home')}
+                            aria-label="Navigate to home page"
+                        >
+                            Home
+                        </button>
+                        <button
+                            className={`font-semibold transition-colors duration-200 ${currentPage === 'quiz' ? 'text-primaryBlue underline' : 'text-gray-500 hover:text-primaryBlue'}`}
+                            onClick={() => setCurrentPage('quiz')}
+                            aria-label="Navigate to learning quiz"
+                        >
+                            Learning to Follow Jesus
+                        </button>
+                    </nav>
+                    {currentPage === 'home' ? <HomePage /> : <QuizPage setPage={setCurrentPage} />}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
