@@ -537,7 +537,7 @@
                             onClick={() => setCurrentPage('quiz')}
                             aria-label="Navigate to learning quiz"
                         >
-                            Learning to Follow Jesus
+                           <h1 style={{ color: 'red', fontWeight: 'bold' }}>Learning to Follow Jesus</h1>
                         </button>
                     </nav>
                     {currentPage === 'home' ? <HomePage /> : <QuizPage setPage={setCurrentPage} />}
