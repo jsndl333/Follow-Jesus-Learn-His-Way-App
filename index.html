@@ -320,15 +320,8 @@
                     <section className="bg-white p-6 rounded-lg shadow-md mb-8 text-center">
                         <h2 className="text-2xl font-semibold text-primaryBlue mb-4">Welcome</h2>
                         <p className="text-lg text-gray-700">Welcome to the Reformed Jesus' Command App. This is a tool to help us know and apply the life-giving commands of Jesus. Through the grace of the Holy Spirit, may we find joyful obedience not as a burden, but as the path to true freedom, reflecting the simple trust of a child in their Father.</p>
-                        <p className="text-lg text-gray-700 mt-2">May the Lord bless and strengthen us all in our walk with Him. From Jason, please visit my website:</p>
-                        <button
-                            className="mt-4 px-6 py-2 bg-primaryBlue text-white rounded-full font-bold hover:bg-blue-700 transition-colors"
-                            onClick={() => window.open('https://churchconcern.great-site.net/', '_blank')}
-                            aria-label="Click Here To My Blog Site"
-                        >
-                            Click Here To My Blog Site
-                        </button>
-                    </section>
+                        <p className="text-lg text-gray-700 mt-2">May the Lord bless and strengthen us all in our walk with Him. From Jason.</p>
+                        
                     <section className="bg-white p-6 rounded-lg shadow-md mb-8 text-center">
                         <h2 className="text-2xl font-semibold text-primaryBlue mb-4">Random Command</h2>
                         {verse ? (
@@ -538,12 +531,21 @@
                             aria-label="Navigate to learning quiz"
                         >
                            <h1 style={{ color: 'red', fontWeight: 'bold' }}>Learning to Follow Jesus</h1>
-                        </button>
-                    </nav>
-                    {currentPage === 'home' ? <HomePage /> : <QuizPage setPage={setCurrentPage} />}
-                </div>
-            );
-        }
+                                  </button>
+            </nav>
+            {currentPage === 'home' ? <HomePage /> : <QuizPage setPage={setCurrentPage} />}
+            <div className="text-center py-6 bg-gray-100">
+                <button
+                    className="px-6 py-2 bg-primaryBlue text-white rounded-full font-bold hover:bg-blue-700 transition-colors"
+                    onClick={() => window.open('https://churchconcern.great-site.net/', '_blank')}
+                    aria-label="Visit my blog site"
+                >
+                    Visit My Blog Site
+                </button>
+            </div>
+        </div>
+    );
+}
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
