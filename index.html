@@ -21,7 +21,7 @@
     <style>
         /* Custom styles for the app's overall look and feel */
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Lora', sans-serif;
         }
         .page-content {
             animation: fadeIn 0.5s ease-in-out;
@@ -320,8 +320,9 @@
                     <section className="bg-white p-6 rounded-lg shadow-md mb-8 text-center">
                         <h2 className="text-2xl font-semibold text-primaryBlue mb-4">Welcome</h2>
                         <p className="text-lg text-gray-700">Welcome to the Reformed Jesus' Command App. This is a tool to help us know and apply the life-giving commands of Jesus. Through the grace of the Holy Spirit, may we find joyful obedience not as a burden, but as the path to true freedom, reflecting the simple trust of a child in their Father.</p>
-                        <p className="text-lg text-gray-700 mt-2">May the Lord bless and strengthen us all in our walk with Him. From Jason.</p>
-                        
+                        <p className="text-lg text-gray-700 mt-2">May the Lord bless and strengthen us all in our walk with Him. From Jason</p>
+                       
+                    </section>
                     <section className="bg-white p-6 rounded-lg shadow-md mb-8 text-center">
                         <h2 className="text-2xl font-semibold text-primaryBlue mb-4">Random Command</h2>
                         {verse ? (
@@ -509,29 +510,30 @@
         // --- COMPONENT: App ---
         // The main application component that handles page routing.
         function App() {
-    const [currentPage, setCurrentPage] = useState('home');
-    return (
-        <div className="min-h-screen bg-gray-100">
-            <header className="bg-primaryBlue text-white py-6 text-center flex flex-col items-center">
-                <h1 className="text-4xl font-bold">Jesus' Commandments App</h1>
-                <p className="mt-2">Learn and live the commands of Jesus</p>
-            </header>
-            <nav className="flex justify-center space-x-4 py-4 bg-white shadow-sm">
-                <button
-                    className={`font-semibold transition-colors duration-200 ${currentPage === 'home' ? 'text-primaryBlue underline' : 'text-gray-500 hover:text-primaryBlue'}`}
-                    onClick={() => setCurrentPage('home')}
-                    aria-label="Navigate to home page"
-                >
-                    Home
-                </button>
-                <button
-                    className={`font-semibold transition-colors duration-200 ${currentPage === 'quiz' ? 'text-primaryBlue underline' : 'text-gray-500 hover:text-primaryBlue'}`}
-                    onClick={() => setCurrentPage('quiz')}
-                    aria-label="Navigate to learning quiz"
-                    style={{ color: 'red', fontWeight: 'bold' }}
-                >
-                    Learning to Follow Jesus
-                </button>
+            const [currentPage, setCurrentPage] = useState('home');
+
+            return (
+                <div className="min-h-screen bg-gray-100">
+                    <header className="bg-primaryBlue text-white py-6 text-center flex flex-col items-center">
+                        <h1 className="text-4xl font-bold">Jesus' Commandments App</h1>
+                        <p className="mt-2">Learn and live the commands of Jesus</p>
+                    </header>
+                    <nav className="flex justify-center space-x-4 py-4 bg-white shadow-sm">
+                        <button
+                            className={`font-semibold transition-colors duration-200 ${currentPage === 'home' ? 'text-primaryBlue underline' : 'text-gray-500 hover:text-primaryBlue'}`}
+                            onClick={() => setCurrentPage('home')}
+                            aria-label="Navigate to home page"
+                        >
+                            Home
+                        </button>
+                        <button
+                            className={`font-semibold transition-colors duration-200 ${currentPage === 'quiz' ? 'text-primaryBlue underline' : 'text-gray-500 hover:text-primaryBlue'}`}
+                            onClick={() => setCurrentPage('quiz')}
+                            aria-label="Navigate to learning quiz"
+                        >
+                            <h1 style={{ color: 'red', fontWeight: 'bold' }}>Learning to Follow Jesus</h1>
+
+                                  </button>
             </nav>
             {currentPage === 'home' ? <HomePage /> : <QuizPage setPage={setCurrentPage} />}
             <div className="text-center py-6 bg-gray-100">
@@ -546,6 +548,9 @@
         </div>
     );
 }
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<App />);
 
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
